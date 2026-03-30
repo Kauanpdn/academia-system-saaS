@@ -7,6 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKey;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,20 +17,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "academy")
+@Table(name = "workout")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 
-public class Academy {
+public class Workout {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    private String nome;
-    private String email;
-    private String phone;
+
+    private String name;
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -35,4 +41,3 @@ public class Academy {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
-
