@@ -23,7 +23,7 @@ import lombok.Setter;
 public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
     private String nome;
 

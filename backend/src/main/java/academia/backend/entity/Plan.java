@@ -26,7 +26,7 @@ import lombok.Setter;
 public class Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String nome;
     private BigDecimal price;

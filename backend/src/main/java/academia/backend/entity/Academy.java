@@ -23,9 +23,9 @@ import lombok.Setter;
 public class Academy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
-    private String nome;
+    private String name;
     private String email;
     private String phone;
 

@@ -27,9 +27,9 @@ public class Payment {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
-        @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -37,7 +37,7 @@ public class Payment {
     @JoinColumn(name = "academy_id")
     private Academy academy;
 
-    private BigDecimal amount;
+    private Long amount;
     private String status;
 
     @Column(name = "payment_date")
