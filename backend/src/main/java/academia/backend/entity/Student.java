@@ -28,10 +28,10 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String nome;
+    private String name;
 
     @Column(name = "birth_date")
-    private LocalDate birthDate;
+    private LocalDate  birthDate;
 
     @ManyToOne
     @JoinColumn(name = "academy_id")
@@ -42,8 +42,8 @@ public class Student {
     private Plan plan;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

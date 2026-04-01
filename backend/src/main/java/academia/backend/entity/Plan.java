@@ -28,7 +28,7 @@ public class Plan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String nome;
+    private String name;
     private BigDecimal price;
     private Integer duration;
 

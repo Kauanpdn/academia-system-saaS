@@ -25,7 +25,7 @@ public class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    private String nome;
+    private String name;
 
     @Column(name = "muscle_group")
     private String muscleGroup;

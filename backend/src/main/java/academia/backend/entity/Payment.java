@@ -37,7 +37,7 @@ public class Payment {
     @JoinColumn(name = "academy_id")
     private Academy academy;
 
-    private Long amount;
+    private BigDecimal amount;
     private String status;
 
     @Column(name = "payment_date")
