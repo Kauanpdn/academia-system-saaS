@@ -12,4 +12,31 @@ import academia.backend.service.UserService;
 @RequestMapping("/Users")
 public class UserController {
     
+    @Autowired
+    private UserService userService; 
+
+    @GetMapping
+    public List<User> findAll(){
+        return userService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public User findById(@PathVariable Integer id){
+        return userService.findById(id);
+    }
+
+    @PostMapping()
+    public User save(@PathVariable User user){
+        return userService.save(user);
+    }
+
+    @PutMapping("/{id}")
+    public User update(@PathVariable Integer id, @RequestBody User user){
+        return userService.update(id, user);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete (@PathVariable Integer id){
+        userService.delete(id);
+    }
 }
