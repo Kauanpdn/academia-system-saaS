@@ -9,7 +9,7 @@ import academia.backend.entity.Student;
 import academia.backend.service.StudentService;
 
 @RestController
-@RequestMapping("/Users")
+@RequestMapping("/Students")
 public class StudentController {
     
     @Autowired
