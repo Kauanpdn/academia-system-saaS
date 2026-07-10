@@ -1,44 +1,68 @@
 package academia.backend.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
+
+
+import academia.backend.dto.academy.AcademyRequestDTO;
+import academia.backend.dto.academy.AcademyResponseDTO;
 import academia.backend.entity.Academy;
+import academia.backend.mapper.AcademyMapper;
 import academia.backend.repository.AcademyRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AcademyService {
 
     private final AcademyRepository academyRepository;
+    private final AcademyMapper academyMapper;
 
-    public Academy save (Academy academy){
-        return academyRepository.save(academy);
+    public AcademyResponseDTO save(AcademyRequestDTO dto) {
+
+        Academy academy = academyMapper.toEntity(dto);
+
+        Academy saved = academyRepository.save(academy);
+
+        return academyMapper.toResponse(saved);
     }
 
-    public List<Academy> findAll(){
-        return academyRepository.findAll();
+    public List<AcademyResponseDTO> findAll() {
+
+        return academyRepository.findAll()
+                .stream()
+                .map(academyMapper::toResponse)
+                .toList();
     }
 
-    public Academy findById(Integer id){
-        return academyRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Academia não encontrada"));
+    public AcademyResponseDTO findById(Integer id) {
+
+        Academy academy = academyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Academia não encontrada"));
+
+        return academyMapper.toResponse(academy);
     }
 
-    public Academy update(Integer id, Academy academy){
+    public AcademyResponseDTO update(Integer id, AcademyRequestDTO dto) {
 
-        Academy academyExists = findById(id);
+        Academy academy = academyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Academia não encontrada"));
 
-        academyExists.setName(academyExists.getName());
-        academyExists.setEmail(academyExists.getEmail());
-        academyExists.setPhone(academyExists.getPhone());
+        academy.setName(dto.name());
+        academy.setEmail(dto.email());
+        academy.setPhone(dto.phone());
 
-        return academyRepository.save(academyExists);
+        Academy updated = academyRepository.save(academy);
 
+        return academyMapper.toResponse(updated);
     }
 
-    public void delete(Integer id){
-        academyRepository.deleteById(id);;
+    public void delete(Integer id) {
+
+        Academy academy = academyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Academia não encontrada")); 
+                academyRepository.delete(academy);
     }
 
 }
