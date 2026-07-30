@@ -1,5 +1,12 @@
 package academia.backend.dto.exercise;
 
-public class ExerciseResponseDTO {
-    
-}
+import java.time.LocalDateTime;
+
+public record ExerciseResponseDTO(
+
+        Integer id,
+        String name,
+        String muscleGroup,
+        LocalDateTime createdAt
+
+) {}
