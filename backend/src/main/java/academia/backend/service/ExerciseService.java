@@ -1,40 +1,54 @@
 package academia.backend.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
 
+import academia.backend.dto.exercise.ExerciseRequestDTO;
+import academia.backend.dto.exercise.ExerciseResponseDTO;
 import academia.backend.entity.Exercise;
+import academia.backend.mapper.ExerciseMapper;
 import academia.backend.repository.ExerciseRepository;
-
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
+    private final ExerciseMapper exerciseMapper;
 
-    public Exercise save(Exercise exercise) {
-        return exerciseRepository.save(exercise);
+    public ExerciseResponseDTO save(ExerciseRequestDTO dto) {
+
+        Exercise exercise = exerciseMapper.toEntity(dto);
+
+        return exerciseMapper.toResponse(exerciseRepository.save(exercise));
     }
 
-    public List<Exercise> findAll() {
-        return exerciseRepository.findAll();
+    public List<ExerciseResponseDTO> findAll() {
+        return exerciseRepository.findAll()
+                .stream()
+                .map(exerciseMapper::toResponse)
+                .toList();
     }
 
-    public Exercise findById(Integer id) {
-        return exerciseRepository.findById(id)
+    public ExerciseResponseDTO findById(Integer id) {
+
+        Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Exercício não encontrado"));
+
+        return exerciseMapper.toResponse(exercise);
     }
 
-    public Exercise update(Integer id, Exercise exercise) {
+    public ExerciseResponseDTO update(Integer id, ExerciseRequestDTO dto) {
 
-        Exercise exerciseExists = findById(id);
+        Exercise exercise = exerciseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Exercício não encontrado"));
 
-        exerciseExists.setName(exercise.getName());
-        exerciseExists.setMuscleGroup(exercise.getMuscleGroup());
+        exercise.setName(dto.name());
+        exercise.setMuscleGroup(dto.muscleGroup());
 
-        return exerciseRepository.save(exerciseExists);
+        return exerciseMapper.toResponse(exerciseRepository.save(exercise));
     }
 
     public void delete(Integer id) {

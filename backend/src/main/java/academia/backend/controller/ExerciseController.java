@@ -2,41 +2,42 @@ package academia.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
-import academia.backend.entity.Exercise;
+import academia.backend.dto.exercise.ExerciseRequestDTO;
+import academia.backend.dto.exercise.ExerciseResponseDTO;
 import academia.backend.service.ExerciseService;
-
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/exercises")
+@RequiredArgsConstructor
 public class ExerciseController {
 
-    @Autowired
-    private ExerciseService exerciseService;
-
+    private final ExerciseService exerciseService;
 
     @GetMapping
-    public List<Exercise> findAll(){
+    public List<ExerciseResponseDTO> findAll() {
         return exerciseService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Exercise findById(@PathVariable Integer id) {
+    public ExerciseResponseDTO findById(@PathVariable Integer id) {
         return exerciseService.findById(id);
     }
 
     @PostMapping
-    public Exercise save(@RequestBody Exercise exercise) {
-        return exerciseService.save(exercise);
+    public ExerciseResponseDTO save(@Valid @RequestBody ExerciseRequestDTO dto) {
+        return exerciseService.save(dto);
     }
 
     @PutMapping("/{id}")
-    public Exercise update(@PathVariable Integer id,
-            @RequestBody Exercise exercise) {
-        return exerciseService.update(id, exercise);
+    public ExerciseResponseDTO update(
+            @PathVariable Integer id,
+            @Valid @RequestBody ExerciseRequestDTO dto) {
+
+        return exerciseService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")

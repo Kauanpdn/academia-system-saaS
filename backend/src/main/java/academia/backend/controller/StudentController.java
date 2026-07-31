@@ -2,41 +2,46 @@ package academia.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import academia.backend.entity.Student;
+import academia.backend.dto.student.StudentRequestDTO;
+import academia.backend.dto.student.StudentResponseDTO;
 import academia.backend.service.StudentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/Students")
+@RequestMapping("/students")
+@RequiredArgsConstructor
 public class StudentController {
-    
-    @Autowired
-    private StudentService studentService;
+
+    private final StudentService studentService;
 
     @GetMapping
-    public List<Student> findAll(){
+    public List<StudentResponseDTO> findAll() {
         return studentService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Student findById(@PathVariable Integer id){
+    public StudentResponseDTO findById(@PathVariable Integer id) {
         return studentService.findById(id);
     }
 
-    @PostMapping()
-    public Student save(@PathVariable Student student){
-        return studentService.save(student);
+    @PostMapping
+    public StudentResponseDTO save(@Valid @RequestBody StudentRequestDTO dto) {
+        return studentService.save(dto);
     }
 
     @PutMapping("/{id}")
-    public Student update(@PathVariable Integer id, @RequestBody Student student){
-        return studentService.update(id, student);
+    public StudentResponseDTO update(
+            @PathVariable Integer id,
+            @Valid @RequestBody StudentRequestDTO dto) {
+
+        return studentService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id){
+    public void delete(@PathVariable Integer id) {
         studentService.delete(id);
     }
 }

@@ -2,44 +2,46 @@ package academia.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
-import academia.backend.entity.Plan;
+import academia.backend.dto.plan.PlanRequestDTO;
+import academia.backend.dto.plan.PlanResponseDTO;
 import academia.backend.service.PlanService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/Plans")
+@RequestMapping("/plans")
+@RequiredArgsConstructor
 public class PlanController {
 
-    @Autowired
-    private PlanService planService;
-
+    private final PlanService planService;
 
     @GetMapping
-    public List<Plan> findAll() {
+    public List<PlanResponseDTO> findAll() {
         return planService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Plan findById(@PathVariable Integer id) {
+    public PlanResponseDTO findById(@PathVariable Integer id) {
         return planService.findById(id);
     }
 
     @PostMapping
-    public Plan save(@RequestBody Plan plan) {
-        return planService.save(plan);
+    public PlanResponseDTO save(@Valid @RequestBody PlanRequestDTO dto) {
+        return planService.save(dto);
     }
 
     @PutMapping("/{id}")
-    public Plan update(@PathVariable Integer id, @RequestBody Plan plan) {
-        return planService.update(id, plan);
+    public PlanResponseDTO update(
+            @PathVariable Integer id,
+            @Valid @RequestBody PlanRequestDTO dto) {
+
+        return planService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         planService.delete(id);
     }
-
 }

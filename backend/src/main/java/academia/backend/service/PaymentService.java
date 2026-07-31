@@ -4,44 +4,75 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import academia.backend.dto.payment.PaymentRequestDTO;
+import academia.backend.dto.payment.PaymentResponseDTO;
+import academia.backend.entity.Academy;
 import academia.backend.entity.Payment;
+import academia.backend.entity.Student;
+import academia.backend.mapper.PaymentMapper;
+import academia.backend.repository.AcademyRepository;
 import academia.backend.repository.PaymentRepository;
+import academia.backend.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
 
-    private final PaymentRepository paymentRepository;
+        private final PaymentRepository paymentRepository;
+        private final StudentRepository studentRepository;
+        private final AcademyRepository academyRepository;
+        private final PaymentMapper paymentMapper;
 
-    public Payment save(Payment payment) {
-        return paymentRepository.save(payment);
-    }
+        public PaymentResponseDTO save(PaymentRequestDTO dto) {
 
-    public List<Payment> findAll() {
-        return paymentRepository.findAll();
-    }
+                Student student = studentRepository.findById(dto.studentId())
+                                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
 
-    public Payment findById(Integer id) {
-        return paymentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
-    }
+                Academy academy = academyRepository.findById(dto.academyId())
+                                .orElseThrow(() -> new RuntimeException("Academia não encontrada"));
 
-    public Payment update(Integer id, Payment payment) {
+                Payment payment = paymentMapper.toEntity(dto, student, academy);
 
-        Payment paymentExists = findById(id);
+                return paymentMapper.toResponse(paymentRepository.save(payment));
+        }
 
-        paymentExists.setStudent(payment.getStudent());
-        paymentExists.setAcademy(payment.getAcademy());
-        paymentExists.setAmount(payment.getAmount());
-        paymentExists.setStatus(payment.getStatus());
-        paymentExists.setPaymentDate(payment.getPaymentDate());
+        public List<PaymentResponseDTO> findAll() {
+                return paymentRepository.findAll()
+                                .stream()
+                                .map(paymentMapper::toResponse)
+                                .toList();
+        }
 
-        return paymentRepository.save(paymentExists);
-    }
+        public PaymentResponseDTO findById(Integer id) {
 
-    public void delete(Integer id) {
-        paymentRepository.deleteById(id);
-    }
-    
+                Payment payment = paymentRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
+
+                return paymentMapper.toResponse(payment);
+        }
+
+        public PaymentResponseDTO update(Integer id, PaymentRequestDTO dto) {
+
+                Payment payment = paymentRepository.findById(id)
+                                .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
+
+                Student student = studentRepository.findById(dto.studentId())
+                                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
+
+                Academy academy = academyRepository.findById(dto.academyId())
+                                .orElseThrow(() -> new RuntimeException("Academia não encontrada"));
+
+                payment.setStudent(student);
+                payment.setAcademy(academy);
+                payment.setAmount(dto.amount());
+                payment.setStatus(dto.status());
+                payment.setPaymentDate(dto.paymentDate());
+
+                return paymentMapper.toResponse(paymentRepository.save(payment));
+        }
+
+        public void delete(Integer id) {
+                paymentRepository.deleteById(id);
+        }
 }

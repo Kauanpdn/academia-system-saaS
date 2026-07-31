@@ -1,43 +1,75 @@
 package academia.backend.service;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
 
+import academia.backend.dto.workoutExercise.WorkoutExerciseRequestDTO;
+import academia.backend.dto.workoutExercise.WorkoutExerciseResponseDTO;
+import academia.backend.entity.Exercise;
+import academia.backend.entity.Workout;
 import academia.backend.entity.WorkoutExercise;
+import academia.backend.mapper.WorkoutExerciseMapper;
+import academia.backend.repository.ExerciseRepository;
 import academia.backend.repository.WorkoutExerciseRepository;
-
+import academia.backend.repository.WorkoutRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class WorkoutExerciseService {
 
     private final WorkoutExerciseRepository workoutExerciseRepository;
+    private final WorkoutRepository workoutRepository;
+    private final ExerciseRepository exerciseRepository;
+    private final WorkoutExerciseMapper workoutExerciseMapper;
 
-    public WorkoutExercise save(WorkoutExercise workoutExercise) {
-        return workoutExerciseRepository.save(workoutExercise);
+    public WorkoutExerciseResponseDTO save(WorkoutExerciseRequestDTO dto) {
+
+        Workout workout = workoutRepository.findById(dto.workoutId())
+                .orElseThrow(() -> new RuntimeException("Treino não encontrado"));
+
+        Exercise exercise = exerciseRepository.findById(dto.exerciseId())
+                .orElseThrow(() -> new RuntimeException("Exercício não encontrado"));
+
+        WorkoutExercise workoutExercise = workoutExerciseMapper.toEntity(dto, workout, exercise);
+
+        return workoutExerciseMapper.toResponse(workoutExerciseRepository.save(workoutExercise));
     }
 
-    public List<WorkoutExercise> findAll() {
-        return workoutExerciseRepository.findAll();
+    public List<WorkoutExerciseResponseDTO> findAll() {
+        return workoutExerciseRepository.findAll()
+                .stream()
+                .map(workoutExerciseMapper::toResponse)
+                .toList();
     }
 
-    public WorkoutExercise findById(Integer id) {
-        return workoutExerciseRepository.findById(id)
+    public WorkoutExerciseResponseDTO findById(Integer id) {
+
+        WorkoutExercise workoutExercise = workoutExerciseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("WorkoutExercise não encontrado"));
+
+        return workoutExerciseMapper.toResponse(workoutExercise);
     }
 
-    public WorkoutExercise update(Integer id, WorkoutExercise workoutExercise) {
+    public WorkoutExerciseResponseDTO update(Integer id, WorkoutExerciseRequestDTO dto) {
 
-        WorkoutExercise workoutExerciseExists = findById(id);
+        WorkoutExercise workoutExercise = workoutExerciseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("WorkoutExercise não encontrado"));
 
-        workoutExerciseExists.setWorkout(workoutExercise.getWorkout());
-        workoutExerciseExists.setExercise(workoutExercise.getExercise());
-        workoutExerciseExists.setSets(workoutExercise.getSets());
-        workoutExerciseExists.setReps(workoutExercise.getReps());
-        workoutExerciseExists.setRestTime(workoutExercise.getRestTime());
+        Workout workout = workoutRepository.findById(dto.workoutId())
+                .orElseThrow(() -> new RuntimeException("Treino não encontrado"));
 
-        return workoutExerciseRepository.save(workoutExerciseExists);
+        Exercise exercise = exerciseRepository.findById(dto.exerciseId())
+                .orElseThrow(() -> new RuntimeException("Exercício não encontrado"));
+
+        workoutExercise.setWorkout(workout);
+        workoutExercise.setExercise(exercise);
+        workoutExercise.setSets(dto.sets());
+        workoutExercise.setReps(dto.reps());
+        workoutExercise.setRestTime(dto.restTime());
+
+        return workoutExerciseMapper.toResponse(workoutExerciseRepository.save(workoutExercise));
     }
 
     public void delete(Integer id) {

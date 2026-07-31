@@ -1,43 +1,68 @@
 package academia.backend.service;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
 
+import org.springframework.stereotype.Service;
+
+import academia.backend.dto.plan.PlanRequestDTO;
+import academia.backend.dto.plan.PlanResponseDTO;
+import academia.backend.entity.Academy;
 import academia.backend.entity.Plan;
+import academia.backend.mapper.PlanMapper;
+import academia.backend.repository.AcademyRepository;
 import academia.backend.repository.PlanRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class PlanService {
-    
-    final private PlanRepository planRepository;
 
-    public Plan save(Plan plan){
-        return planRepository.save(plan);
+    private final PlanRepository planRepository;
+    private final AcademyRepository academyRepository;
+    private final PlanMapper planMapper;
+
+    public PlanResponseDTO save(PlanRequestDTO dto) {
+
+        Academy academy = academyRepository.findById(dto.academyId())
+                .orElseThrow(() -> new RuntimeException("Academia não encontrada"));
+
+        Plan plan = planMapper.toEntity(dto, academy);
+
+        return planMapper.toResponse(planRepository.save(plan));
     }
 
-    public List<Plan> findAll(){
-        return  planRepository.findAll();
+    public List<PlanResponseDTO> findAll() {
+        return planRepository.findAll()
+                .stream()
+                .map(planMapper::toResponse)
+                .toList();
     }
 
-    public Plan findById(Integer id){
-        return planRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Plano não encontrada"));
+    public PlanResponseDTO findById(Integer id) {
+
+        Plan plan = planRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Plano não encontrado"));
+
+        return planMapper.toResponse(plan);
     }
 
-    public Plan update(Integer id, Plan plan){
-        Plan planExists = findById(id);
+    public PlanResponseDTO update(Integer id, PlanRequestDTO dto) {
 
-        planExists.setName(plan.getName());
-        planExists.setPrice(plan.getPrice());
-        planExists.setDuration(plan.getDuration());
-        planExists.setAcademy(plan.getAcademy());
+        Plan plan = planRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Plano não encontrado"));
 
-        return planRepository.save(planExists);
+        Academy academy = academyRepository.findById(dto.academyId())
+                .orElseThrow(() -> new RuntimeException("Academia não encontrada"));
+
+        plan.setName(dto.name());
+        plan.setPrice(dto.price());
+        plan.setDuration(dto.duration());
+        plan.setAcademy(academy);
+
+        return planMapper.toResponse(planRepository.save(plan));
     }
 
-    public void delete(Integer id){
+    public void delete(Integer id) {
         planRepository.deleteById(id);
     }
 }

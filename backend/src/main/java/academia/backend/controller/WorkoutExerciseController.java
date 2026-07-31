@@ -1,41 +1,45 @@
 package academia.backend.controller;
 
-
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import academia.backend.entity.WorkoutExercise;
+import academia.backend.dto.workoutExercise.WorkoutExerciseRequestDTO;
+import academia.backend.dto.workoutExercise.WorkoutExerciseResponseDTO;
 import academia.backend.service.WorkoutExerciseService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/workout-exercises")
+@RequiredArgsConstructor
 public class WorkoutExerciseController {
-    
-    
-    @Autowired
-    private WorkoutExerciseService workoutExerciseService;
 
+    private final WorkoutExerciseService workoutExerciseService;
 
     @GetMapping
-    public List <WorkoutExercise> findAll(){
+    public List<WorkoutExerciseResponseDTO> findAll() {
         return workoutExerciseService.findAll();
     }
 
     @GetMapping("/{id}")
-    public WorkoutExercise findById(@PathVariable Integer id) {
+    public WorkoutExerciseResponseDTO findById(@PathVariable Integer id) {
         return workoutExerciseService.findById(id);
     }
 
     @PostMapping
-    public WorkoutExercise save(@RequestBody WorkoutExercise workoutExercise) {
-        return workoutExerciseService.save(workoutExercise);
+    public WorkoutExerciseResponseDTO save(
+            @Valid @RequestBody WorkoutExerciseRequestDTO dto) {
+
+        return workoutExerciseService.save(dto);
     }
 
     @PutMapping("/{id}")
-    public WorkoutExercise update(@PathVariable Integer id, @RequestBody WorkoutExercise workoutExercise) {
-        return workoutExerciseService.update(id, workoutExercise);
+    public WorkoutExerciseResponseDTO update(
+            @PathVariable Integer id,
+            @Valid @RequestBody WorkoutExerciseRequestDTO dto) {
+
+        return workoutExerciseService.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
